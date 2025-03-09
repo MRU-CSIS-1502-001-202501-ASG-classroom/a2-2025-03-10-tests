@@ -54,6 +54,44 @@ public class BuildingTests {
     }
 
     @Nested
+    class CopyConstructorTests {
+        @Test
+        public void copy_constructor_works() {
+            // Given a building with one die in it
+            Building originalBuilding = new Building();
+            originalBuilding.add(new Die("G3"), 2, 1);
+
+            // When we store the original's basic properties
+            int originalHeight = originalBuilding.getHeight();
+            int originalNumDice = originalBuilding.getNumDice();
+            boolean originalIsValid = originalBuilding.isValid();
+            boolean originalViolations = originalBuilding.getViolations().hasViolations();
+            Die originalDie = originalBuilding.getDie(2, 1, 1);
+
+            // And when we make a copy of that building
+            Building copyOfBuilding = new Building(originalBuilding);
+
+            // Then they copy has the same basic properties as the original
+            assertEquals(originalHeight, copyOfBuilding.getHeight());
+            assertEquals(originalNumDice, copyOfBuilding.getNumDice());
+            assertEquals(originalIsValid, copyOfBuilding.isValid());
+            assertEquals(originalViolations, copyOfBuilding.getViolations().hasViolations());
+            assertEquals(originalDie, copyOfBuilding.getDie(2, 1, 1));
+
+            // And when we alter the original
+            originalBuilding.add(new Die("W2"), 2, 1); // Descending die!
+
+            // Then the copy hasn't changed.
+            assertEquals(originalHeight, copyOfBuilding.getHeight());
+            assertEquals(originalNumDice, copyOfBuilding.getNumDice());
+            assertEquals(originalIsValid, copyOfBuilding.isValid());
+            assertEquals(originalViolations, copyOfBuilding.getViolations().hasViolations());
+            assertEquals(originalDie, copyOfBuilding.getDie(2, 1, 1));
+            assertNull(copyOfBuilding.getDie(2, 1, 2));
+        }
+    }
+
+    @Nested
     class AddDieTests {
         private Building building;
 
@@ -359,4 +397,27 @@ public class BuildingTests {
 
     }
 
+    @Nested
+    class InvalidBuildingBehaviour {
+        @Test
+        public void building_with_invalid_stack_and_two_dice_has_numDice_2() {
+            Building building = new Building();
+
+            building.add(new Die("R4"), 2, 1);
+            building.add(new Die("W3"), 2, 1);
+
+            assertEquals(2, building.getNumDice());
+        }
+
+        @Test
+        public void building_with_7_dice_is_invalid() {
+            Building building = new Building();
+
+            for (int count = 1; count <= 7; count++) {
+                building.add(new Die("W3"), 3, 2);
+            }
+
+            assertFalse(building.isValid());
+        }
+    }
 }

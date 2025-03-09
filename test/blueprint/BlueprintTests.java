@@ -87,7 +87,7 @@ public class BlueprintTests {
                         "'1X X3 2X',false,true,true,false,false,true",
                         "'XX XX XX',true,true,true,true,true,true",
         })
-        public void says_spaces_with_X_height_targets_are_prohibited(String contructorText,
+        public void says_spaces_with_0_height_targets_are_prohibited(String contructorText,
                         boolean expectedR1C1IsProhibited, boolean expectedR1C2IsProhibited,
                         boolean expectedR2C1IsProhibited, boolean expectedR2C2IsProhibited,
                         boolean expectedR3C1IsProhibited, boolean expectedR3C2IsProhibited) {
