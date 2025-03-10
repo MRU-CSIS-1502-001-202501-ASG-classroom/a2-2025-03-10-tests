@@ -40,10 +40,19 @@ public class RoundTripTests {
                 actualResultPath(66, testNum));
         app.run();
 
-        List<String> expectedLines = only(expectedFileLines(66, testNum), "glass", "recycled", "bonus");
-        List<String> actualLines = only(actualFileLines(66, testNum), "glass", "recycled", "bonus");
+        // Confirm that the Blueprint is present in the first three lines of the
+        // produced scoring report.
+        List<String> expectedBlueprintLines = expectedBlueprintLines(66, testNum);
+        List<String> actualBlueprintLines = actualFileLines(66, testNum).subList(0, 3);
 
-        assertIterableEquals(expectedLines, actualLines);
+        assertIterableEquals(expectedBlueprintLines, actualBlueprintLines);
+
+        // Confirm that the scores (including format) for glass, recycled, and bonus are
+        // as expected.
+        List<String> expectedScoringLines = only(expectedFileLines(66, testNum), "glass", "recycled", "bonus");
+        List<String> actualScoringLines = only(actualFileLines(66, testNum), "glass", "recycled", "bonus");
+
+        assertIterableEquals(expectedScoringLines, actualScoringLines);
     }
 
     private String buildingPath(int level, String testNum) {
@@ -60,6 +69,11 @@ public class RoundTripTests {
 
     private String actualResultPath(int level, String testNum) {
         return String.format("res/marking/LEVEL-%d/scoring-result-%s.txt", level, testNum);
+    }
+
+    private List<String> expectedBlueprintLines(int level, String testNum) throws Exception {
+        Path expectedBlueprintPath = Paths.get(blueprintPath(level, testNum));
+        return Files.readAllLines(expectedBlueprintPath);
     }
 
     private List<String> expectedFileLines(int level, String testNum) throws Exception {
