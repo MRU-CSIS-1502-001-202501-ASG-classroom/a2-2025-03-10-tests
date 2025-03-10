@@ -1,5 +1,6 @@
 package test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import java.nio.file.Files;
@@ -40,19 +41,32 @@ public class RoundTripTests {
                 actualResultPath(66, testNum));
         app.run();
 
+        List<String> expectedLines = expectedFileLines(66, testNum);
+        List<String> actualLines = actualFileLines(66, testNum);
+
         // Confirm that the Blueprint is present in the first three lines of the
         // produced scoring report.
         List<String> expectedBlueprintLines = expectedBlueprintLines(66, testNum);
-        List<String> actualBlueprintLines = actualFileLines(66, testNum).subList(0, 3);
+        List<String> actualBlueprintLines = actualLines.subList(0, 3);
 
         assertIterableEquals(expectedBlueprintLines, actualBlueprintLines);
 
         // Confirm that the scores (including format) for glass, recycled, and bonus are
         // as expected.
-        List<String> expectedScoringLines = only(expectedFileLines(66, testNum), "glass", "recycled", "bonus");
-        List<String> actualScoringLines = only(actualFileLines(66, testNum), "glass", "recycled", "bonus");
+        List<String> expectedScoringLines = only(expectedLines, "glass", "recycled", "bonus");
+        List<String> actualScoringLines = only(actualLines, "glass", "recycled", "bonus");
 
         assertIterableEquals(expectedScoringLines, actualScoringLines);
+
+        // Confirm that the last line of the generated report has the expected rules
+        // violation message.
+        int expectedLinesSize = expectedLines.size();
+        int actualLinesSize = actualLines.size();
+
+        String expectedLastLine = expectedLines.get(expectedLinesSize - 1);
+        String actualLastLine = actualLines.get(actualLinesSize - 1);
+
+        assertEquals(expectedLastLine, actualLastLine);
     }
 
     private String buildingPath(int level, String testNum) {
